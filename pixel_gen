@@ -1,0 +1,60 @@
+module pixel_gen(
+  output reg [3:0] red=0,
+  output reg [3:0] green=0,
+  output reg [3:0] blue=0,
+  input U,
+  input D,
+  input L,
+  input R,
+  input clk_d,
+  input [9:0] pixel_x,
+  input [9:0] pixel_y,
+  input video_on
+);
+  
+  reg [9:0] x_snake = 100;
+  reg [9:0] y_snake = 200;
+//  reg [3:0] direction;
+  parameter size_snake = 10;
+  parameter speed_snake = 1000000;
+  reg [31:0] snake_synchronise; //this value used to compare to speed_snake so that the snake doesnt move too quickly
+  lways @(posedge clk_d)begin  
+    if (snake_synchronise == speed_snake)
+        snake_synchronise <= 0;
+    else
+        snake_synchronise = snake_synchronise + 1;
+    
+    if (snake_synchronise == speed_snake)
+    begin
+        if ((U == 1'b1) & (y_snake != 0))
+        begin
+            y_snake = y_snake - 5;
+        end
+        if ((D == 1'b1) & (y_snake != 470))
+        begin
+            y_snake = y_snake + 5;
+        end
+        if ((L == 1'b1) & (x_snake != 0))
+        begin
+            x_snake = x_snake - 5;
+        end
+        if ((R == 1'b1) & (x_snake != 630))
+        begin
+            x_snake = x_snake + 5;
+        end
+     end 
+  end
+  
+  always @(posedge clk_d) begin
+    if ((pixel_x < 5)||(pixel_x > 630)||(pixel_y < 10)||(pixel_y > 470)) begin
+      red <= 4'hF;
+      green <= 4'hF;
+      blue <= 4'hF;
+    end
+    else begin
+      red <= video_on?(( (pixel_y > y_snake) & (pixel_y < y_snake + size_snake) & (pixel_x > x_snake) & (pixel_x < x_snake + size_snake) )? 4'hF:4'h0):(4'h0);
+      green <= 4'h0;
+      blue <= 4'h0;
+    end
+  end
+endmodule
