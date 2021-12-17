@@ -1,0 +1,17 @@
+module toplevelmodule(red,green,blue,h_sync,v_sync,clk, U, D, L, R);
+  output h_sync,v_sync;
+  output [3:0] red,green,blue;
+  input clk;
+  input U;
+  input D;
+  input L;
+  input R;
+  wire clkd,vtrig,videoon;
+  wire [9:0] hcount,vcount,xloc,yloc;
+
+  clk_div cd(clkd, clk);
+  h_counter hc(hcount, vtrig, clkd);
+  v_counter vc(vcount, clkd, vtrig);
+  vga_sync vs(h_sync, v_sync, videoon, xloc, yloc, hcount, vcount);
+  pixel_gen pg(red, green, blue, U, D, L, R, clkd, xloc, yloc, videoon);
+endmodule
