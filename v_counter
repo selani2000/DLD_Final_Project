@@ -1,0 +1,14 @@
+module v_counter(v_count, enable_v, clk);
+  output [9:0] v_count;
+  input enable_v, clk;
+
+  reg [9:0] v_count;
+
+  always @ (posedge clk)
+    begin
+      if (v_count < 524)
+        v_count <= v_count + 1;
+      else
+        v_count <= 0;
+    end
+endmodule
